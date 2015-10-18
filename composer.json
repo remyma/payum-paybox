@@ -1,0 +1,26 @@
+{
+  "name": "marem/payum-paybox",
+  "type": "library",
+  "description": "Paybox extension for Payum",
+  "keyword": ["payum", "paybox", "payment"],
+  "homepage": "https://github.com/remyma/payum-paybox",
+  "license": "MIT",
+  "authors": [
+    {
+      "name":     "Matthieu REMY",
+      "email":    "remy.matthieu@gmail.com",
+      "homepage": "https://github.com/remyma"
+    }
+  ],
+  "require": {
+    "payum/core": "1.0.*@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Marem\\PayumPaybox\\": "src/"
+    }
+  },
+  "config": {
+    "bin-dir": "bin"
+  }
+}
