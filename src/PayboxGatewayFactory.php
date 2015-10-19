@@ -11,18 +11,39 @@
 
 namespace Marem\PayumPaybox;
 
-use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\GatewayFactory;
 use marem\PayumPaybox\Action\CaptureAction;
-use Marem\PayumPaybox\Api;
+use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\PaymentFactoryInterface;
 
-class PayboxPaymentFactory extends GatewayFactory
+class PayboxPaymentFactory implements PaymentFactoryInterface
 {
+    /**
+     * @var PaymentFactoryInterface
+     */
+    protected $corePaymentFactory;
+
+    /**
+     * @var array
+     */
+    private $defaultConfig;
+
     /**
      * {@inheritDoc}
      */
-    protected function populateConfig(ArrayObject $config)
+    public function create(array $config = array())
     {
+        return $this->corePaymentFactory->create($this->createConfig($config));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createConfig(array $config = array())
+    {
+        $config = ArrayObject::ensureArrayObject($config);
+        $config->defaults($this->defaultConfig);
+        $config->defaults($this->corePaymentFactory->createConfig((array) $config));
+
         $config->defaults(array(
             'payum.factory_name' => 'paybox',
             'payum.factory_title' => 'Paybox',
@@ -52,5 +73,7 @@ class PayboxPaymentFactory extends GatewayFactory
                 return new Api($payboxConfig, $config['payum.http_client']);
             };
         }
+
+        return (array) $config;
     }
 }

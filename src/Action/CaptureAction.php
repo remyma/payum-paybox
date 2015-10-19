@@ -11,23 +11,38 @@
 
 namespace Marem\PayumPaybox\Action;
 
+use Marem\PayumPaybox\Api;
+use Payum\Core\Action\PaymentAwareAction;
+use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Request\Capture;
-use Payum\Core\Request\Sync;
-use Payum\Core\Action\GatewayAwareAction;
-use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Security\GenericTokenFactoryAwareInterface;
-use Payum\Core\Security\GenericTokenFactoryInterface;
 
-class CaptureAction extends GatewayAwareAction
+class CaptureAction extends PaymentAwareAction implements ApiAwareInterface
 {
+    /**
+     * @var Api
+     */
+    protected $api;
+    /**
+     * {@inheritDoc}
+     */
+    public function setApi($api)
+    {
+        if (false == $api instanceof Api) {
+            throw new UnsupportedApiException('Not supported.');
+        }
+        $this->api = $api;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function execute($request)
     {
+        var_dump($request);die;
         $model = ArrayObject::ensureArrayObject($request->getModel());
-        $this->gateway->execute(new Payment($model));
+        $this->api->payment($model->toUnsafeArray());
     }
     /**
      * {@inheritDoc}

@@ -11,19 +11,19 @@
 
 namespace Marem\PayumPaybox;
 
-use GuzzleHttp\Psr7\Request;
-use Payum\Core\Bridge\Guzzle\HttpClientFactory;
+use Buzz\Client\ClientInterface;
+use Buzz\Message\Form\FormRequest;
+use Payum\Core\Bridge\Buzz\ClientFactory;
+use Payum\Core\Bridge\Buzz\JsonResponse;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\InvalidArgumentException;
 use Payum\Core\Exception\Http\HttpException;
 use Payum\Core\Exception\LogicException;
-use Payum\Core\HttpClientInterface;
 
 class Api
 {
 
     /**
-     * @var HttpClientInterface
+     * @var \Buzz\Client\ClientInterface
      */
     protected $client;
 
@@ -40,11 +40,11 @@ class Api
 
     /**
      * @param array               $options
-     * @param HttpClientInterface $client
+     * @param ClientInterface $client
      *
      * @throws \Payum\Core\Exception\InvalidArgumentException if an option is invalid
      */
-    public function __construct(array $options, HttpClientInterface $client = null)
+    public function __construct(array $options, ClientInterface $client = null)
     {
         $options = ArrayObject::ensureArrayObject($options);
         $options->defaults($this->options);
@@ -60,13 +60,13 @@ class Api
         }
 
         $this->options = $options;
-        $this->client = $client ?: HttpClientFactory::create();
+        $this->client = $client = ClientFactory::createCurl();
     }
 
     /**
      * @param array $fields
      *
-     * @return array
+     * @return \Payum\Core\Bridge\Buzz\JsonResponse
      */
     public function payment(array $fields)
     {
@@ -77,26 +77,22 @@ class Api
     }
 
     /**
-     * @param array $fields
+     * @param \Buzz\Message\Form\FormRequest $request
      *
-     * @return array
+     * @throws \Payum\Core\Exception\Http\HttpException
+     *
+     * @return \Payum\Core\Bridge\Buzz\JsonResponse
      */
-    protected function doRequest(array $fields)
+    protected function doRequest(FormRequest $request)
     {
-        $headers = array(
-            'Content-Type' => 'application/x-www-form-urlencoded',
-        );
-        $request = new Request('POST', $this->getApiEndpoint(), $headers, http_build_query($fields));
-        $response = $this->client->send($request);
-        if (false == ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300)) {
+        $request->setMethod('POST');
+        $request->fromUrl($this->getApiEndpoint());
+        $this->client->send($request, $response = new JsonResponse());
+        if (false == $response->isSuccessful()) {
             throw HttpException::factory($request, $response);
         }
-        $result = array();
-        parse_str($response->getBody()->getContents(), $result);
-        foreach ($result as &$value) {
-            $value = urldecode($value);
-        }
-        return $result;
+
+        return $response;
     }
 
 
