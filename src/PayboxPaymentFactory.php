@@ -40,6 +40,7 @@ class PayboxPaymentFactory implements PaymentFactoryInterface
      */
     public function createConfig(array $config = array())
     {
+        var_dump($config);die;
         $config = ArrayObject::ensureArrayObject($config);
         $config->defaults($this->defaultConfig);
         $config->defaults($this->corePaymentFactory->createConfig((array) $config));
