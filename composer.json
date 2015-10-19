@@ -13,7 +13,7 @@
     }
   ],
   "require": {
-    "payum/core": "0.14.6"
+    "payum/core": "0.14.*"
   },
   "autoload": {
     "psr-4": {
