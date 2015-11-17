@@ -11,9 +11,11 @@
 
 namespace Marem\PayumPaybox;
 
-use marem\PayumPaybox\Action\CaptureAction;
+use Marem\PayumPaybox\Action\CaptureAction;
+use Marem\PayumPaybox\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\PaymentFactoryInterface;
+use Payum\Core\PaymentFactory as CorePaymentFactory;
 
 class PayboxPaymentFactory implements PaymentFactoryInterface
 {
@@ -28,6 +30,16 @@ class PayboxPaymentFactory implements PaymentFactoryInterface
     private $defaultConfig;
 
     /**
+     * @param array $defaultConfig
+     * @param PaymentFactoryInterface $corePaymentFactory
+     */
+    public function __construct(array $defaultConfig = array(), PaymentFactoryInterface $corePaymentFactory = null)
+    {
+        $this->corePaymentFactory = $corePaymentFactory ?: new CorePaymentFactory();
+        $this->defaultConfig = $defaultConfig;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function create(array $config = array())
@@ -40,7 +52,6 @@ class PayboxPaymentFactory implements PaymentFactoryInterface
      */
     public function createConfig(array $config = array())
     {
-        var_dump($config);die;
         $config = ArrayObject::ensureArrayObject($config);
         $config->defaults($this->defaultConfig);
         $config->defaults($this->corePaymentFactory->createConfig((array) $config));
@@ -50,6 +61,7 @@ class PayboxPaymentFactory implements PaymentFactoryInterface
             'payum.factory_title' => 'Paybox',
 
             'payum.action.capture' => new CaptureAction(),
+            'payum.action.status' => new StatusAction(),
         ));
 
         if (false == $config['payum.api']) {
@@ -61,7 +73,7 @@ class PayboxPaymentFactory implements PaymentFactoryInterface
                 'sandbox' => true,
             );
             $config->defaults($config['payum.default_options']);
-            $config['payum.required_options'] = array('username', 'password', 'signature');
+            $config['payum.required_options'] = array('site', 'rang', 'identifiant', 'hmac');
             $config['payum.api'] = function (ArrayObject $config) {
                 $config->validateNotEmpty($config['payum.required_options']);
                 $payboxConfig = array(

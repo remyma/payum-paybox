@@ -15,8 +15,11 @@ use Marem\PayumPaybox\Api;
 use Payum\Core\Action\PaymentAwareAction;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\GetHttpRequest;
+use Payum\Core\Request\Sync;
 
 class CaptureAction extends PaymentAwareAction implements ApiAwareInterface
 {
@@ -40,9 +43,21 @@ class CaptureAction extends PaymentAwareAction implements ApiAwareInterface
      */
     public function execute($request)
     {
-        var_dump($request);die;
+        /** @var $request Capture */
+        RequestNotSupportedException::assertSupports($this, $request);
+
         $model = ArrayObject::ensureArrayObject($request->getModel());
-        $this->api->payment($model->toUnsafeArray());
+
+        $httpRequest = new GetHttpRequest();
+        $this->payment->execute($httpRequest);
+
+        // If we have no error code, we can try capture.
+        if (isset($httpRequest->query['error_code'])) {
+            $model->replace($httpRequest->query);
+        } else {
+            $this->api->payment((array)$model);
+        }
+
     }
     /**
      * {@inheritDoc}
