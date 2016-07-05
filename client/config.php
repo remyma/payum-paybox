@@ -1,7 +1,7 @@
 <?php
 //config.php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Payum\Core\GatewayFactoryInterface;
 use Payum\Core\PayumBuilder;
