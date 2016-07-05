@@ -1,14 +1,29 @@
 <?php
 namespace Marem\PayumPaybox\Action;
 
-use Marem\PayumPaybox\PayboxResponseCodes;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\Request\GetStatusInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\Request\GetStatusInterface;
 
 class StatusAction implements ActionInterface
 {
+    const SUCCESS = "00000";
+
+    const CONTACT_CARD_OWNER = "01";
+
+    const INVALID_TRANSACTION = "12";
+
+    const INVALID_AMOUNT = "13";
+
+    const INVALID_HOLDER_NUMBER = "14";
+
+    const CUSTOM_CANCELATION = "17";
+
+    const RETRY_LATER = "19";
+
+    const EXPIRED_CARD = "33";
+
     /**
      * {@inheritDoc}
      *
@@ -25,7 +40,7 @@ class StatusAction implements ActionInterface
             return;
         }
 
-        if (PayboxResponseCodes::SUCCESS === $model['error_code']) {
+        if (self::SUCCESS === $model['error_code']) {
             $request->markCaptured();
             return;
         }
