@@ -1,64 +1,44 @@
 <?php
-
-/*
- * This file is part of the PayumPaybox package.
- *
- * (c) Matthieu REMY
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Marem\PayumPaybox\Action;
 
-use Marem\PayumPaybox\Api;
-use Payum\Core\Action\PaymentAwareAction;
-use Payum\Core\ApiAwareInterface;
+use Marem\PayumPaybox\Action\Api\BaseApiAwareAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Exception\UnsupportedApiException;
+use Payum\Core\GatewayAwareInterface;
+use Payum\Core\GatewayAwareTrait;
+use Payum\Core\Reply\HttpPostRedirect;
+use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
+use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
-use Payum\Core\Request\Sync;
 
-class CaptureAction extends PaymentAwareAction implements ApiAwareInterface
+class CaptureAction extends BaseApiAwareAction implements GatewayAwareInterface
 {
-    /**
-     * @var Api
-     */
-    protected $api;
-    /**
-     * {@inheritDoc}
-     */
-    public function setApi($api)
-    {
-        if (false == $api instanceof Api) {
-            throw new UnsupportedApiException('Not supported.');
-        }
-        $this->api = $api;
-    }
+    use GatewayAwareTrait;
 
     /**
      * {@inheritDoc}
+     *
+     * @param Capture $request
      */
     public function execute($request)
     {
-        /** @var $request Capture */
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $model = ArrayObject::ensureArrayObject($request->getModel());
+        $details = ArrayObject::ensureArrayObject($request->getModel());
 
         $httpRequest = new GetHttpRequest();
-        $this->payment->execute($httpRequest);
+        $this->gateway->execute($httpRequest);
 
-        // If we have no error code, we can try capture.
         if (isset($httpRequest->query['error_code'])) {
-            $model->replace($httpRequest->query);
+            $details->replace($httpRequest->query);
         } else {
-            $this->api->payment((array)$model);
+            $response = $this->api->doPayment((array)$details);
+            if ($response instanceof HttpPostRedirect) {
+                echo $response->getContent();die;
+            }
         }
-
     }
+
     /**
      * {@inheritDoc}
      */
@@ -67,6 +47,6 @@ class CaptureAction extends PaymentAwareAction implements ApiAwareInterface
         return
             $request instanceof Capture &&
             $request->getModel() instanceof \ArrayAccess
-            ;
+        ;
     }
 }
