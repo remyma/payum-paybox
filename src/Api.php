@@ -1,113 +1,85 @@
 <?php
-
-/*
- * This file is part of the PayumPaybox package.
- *
- * (c) Matthieu REMY
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Marem\PayumPaybox;
 
-use Buzz\Message\Response;
-use Buzz\Message\Form\FormRequest;
-use Payum\Core\Bridge\Buzz\ClientFactory;
-use Payum\Core\Bridge\Spl\ArrayObject;
+use Http\Message\MessageFactory;
 use Payum\Core\Exception\Http\HttpException;
-use Payum\Core\Exception\LogicException;
+use Payum\Core\HttpClientInterface;
+use Payum\Core\Reply\HttpPostRedirect;
 use Payum\Core\Reply\HttpRedirect;
 use RuntimeException;
 
 class Api
 {
+    /**
+     * Primary server.
+     */
     const MAIN_SERVER = "tpeweb.paybox.com";
 
+    /**
+     * Backup server.
+     */
     const BACKUP_SERVER = "tpeweb1.paybox.com";
 
+    /**
+     * Sandbox server.
+     */
     const SANDBOX_SERVER = "preprod-tpeweb.paybox.com";
 
-    const PBX_HASH = "SHA512";
-
     /**
-     * @var \Buzz\Client\Curl
+     * @var HttpClientInterface
      */
     protected $client;
 
     /**
+     * @var MessageFactory
+     */
+    protected $messageFactory;
+
+    /**
      * @var array
      */
-    protected $options = array(
-        'site' => null,
-        'rang' => null,
-        'identifiant' => null,
-        'hmac' => null,
-        'sandbox' => null,
-    );
+    protected $options = [];
 
     /**
      * @param array               $options
-     * @param ClientInterface $client
+     * @param HttpClientInterface $client
+     * @param MessageFactory      $messageFactory
      *
      * @throws \Payum\Core\Exception\InvalidArgumentException if an option is invalid
      */
-    public function __construct(array $options, ClientInterface $client = null)
+    public function __construct(array $options, HttpClientInterface $client, MessageFactory $messageFactory)
     {
-        $client = ClientFactory::createCurl();
-        $options = ArrayObject::ensureArrayObject($options);
-        $options->defaults($this->options);
-        $options->validateNotEmpty(array(
-            'site',
-            'rang',
-            'identifiant',
-            'hmac'
-        ));
-
-        if (false == is_bool($options['sandbox'])) {
-            throw new LogicException('The boolean sandbox option must be set.');
-        }
-
         $this->options = $options;
         $this->client = $client;
+        $this->messageFactory = $messageFactory;
     }
 
-    /**
-     * @param array $fields
-     *
-     * @return \Payum\Core\Bridge\Buzz\JsonResponse
-     */
-    public function payment(array $fields)
-    {
-        $request = new FormRequest();
 
+    public function doPayment(array $fields)
+    {
         $fields['PBX_SITE'] = $this->options['site'];
         $fields['PBX_RANG'] = $this->options['rang'];
         $fields['PBX_IDENTIFIANT'] = $this->options['identifiant'];
         $fields['PBX_HMAC'] = strtoupper($this->computeHmac($this->options['hmac'], $fields));
 
-        $request->setField('params', $fields);
-
-        throw new HttpRedirect(
-            $this->getAuthorizeTokenUrl($fields)
-        );
+        $authorizeTokenUrl = $this->getAuthorizeTokenUrl();
+        return new HttpPostRedirect($authorizeTokenUrl, $fields);
     }
 
     /**
-     * @param \Buzz\Message\Form\FormRequest $request
+     * @param array $fields
      *
-     * @throws \Payum\Core\Exception\Http\HttpException
-     *
-     * @return \Payum\Core\Bridge\Buzz\JsonResponse
+     * @return array
      */
-    protected function doRequest(FormRequest $request)
+    protected function doRequest($method, array $fields)
     {
-        $request->setMethod('GET');
-        $request->fromUrl($this->getApiEndpoint());
+        $headers = [];
 
-        $this->client->send($request, $response = new Response());
+        $request = $this->messageFactory->createRequest($method, $this->getApiEndpoint(), $headers, http_build_query($fields));
 
-        if (false == $response->isSuccessful()) {
+        $response = $this->client->send($request);
+
+        if (false == ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300)) {
             throw HttpException::factory($request, $response);
         }
 
@@ -115,24 +87,9 @@ class Api
     }
 
     /**
-     * @param array  $fields
-     *
-     * @return string
-     */
-    public function getAuthorizeTokenUrl(array $fields = array())
-    {
-        $query = array_filter($fields);
-
-        return sprintf(
-            'https://%s/cgi/MYchoix_pagepaiement.cgi?%s',
-            $this->getApiEndpoint(),
-            http_build_query($query)
-        );
-    }
-
-
-    /**
-     * @return string
+     * Get api end point.
+     * @return string server url
+     * @throws RuntimeException if no server available
      */
     protected function getApiEndpoint()
     {
@@ -157,10 +114,19 @@ class Api
     }
 
     /**
-     * Computes the hmac hash.
-     *
-     * @param string hmac
-     * @param array fields
+     * @return string
+     */
+    public function getAuthorizeTokenUrl()
+    {
+        return sprintf(
+            'https://%s/cgi/MYchoix_pagepaiement.cgi',
+            $this->getApiEndpoint()
+        );
+    }
+
+    /**
+     * @param $hmac string hmac key
+     * @param $fields array fields
      * @return string
      */
     protected function computeHmac($hmac, $fields)
@@ -186,24 +152,5 @@ class Api
             $result[] = sprintf('%s=%s', $key, $value);
         }
         return implode('&', $result);
-    }
-
-    /**
-     * Returns the content of a web resource.
-     *
-     * @param  string $url
-     *
-     * @return string
-     */
-    protected function getWebPage($url)
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL,            $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER,         false);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-        $output = curl_exec($curl);
-        curl_close($curl);
-        return (string) $output;
     }
 }

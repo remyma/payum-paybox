@@ -9,7 +9,7 @@
 namespace Marem\PayumPaybox;
 
 
-class PayboxErrorCodes {
+class PayboxResponseCodes {
 
     const SUCCESS = "00000";
 

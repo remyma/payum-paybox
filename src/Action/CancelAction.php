@@ -1,18 +1,17 @@
 <?php
 namespace Marem\PayumPaybox\Action;
 
-use Marem\PayumPaybox\PayboxResponseCodes;
-use Payum\Core\Action\ActionInterface;
-use Payum\Core\Request\GetStatusInterface;
+use Payum\Core\Action\GatewayAwareAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\Request\Cancel;
 
-class StatusAction implements ActionInterface
+class CancelAction extends GatewayAwareAction
 {
     /**
      * {@inheritDoc}
      *
-     * @param GetStatusInterface $request
+     * @param Cancel $request
      */
     public function execute($request)
     {
@@ -20,18 +19,7 @@ class StatusAction implements ActionInterface
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        if (null === $model['error_code']) {
-            $request->markNew();
-            return;
-        }
-
-        if (PayboxResponseCodes::SUCCESS === $model['error_code']) {
-            $request->markCaptured();
-            return;
-        }
-
-        $request->markFailed();
-
+        throw new \LogicException('Not implemented');
     }
 
     /**
@@ -40,7 +28,7 @@ class StatusAction implements ActionInterface
     public function supports($request)
     {
         return
-            $request instanceof GetStatusInterface &&
+            $request instanceof Cancel &&
             $request->getModel() instanceof \ArrayAccess
         ;
     }
