@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: marem
- * Date: 09/11/15
- * Time: 08:31
- */
 
 namespace Marem\PayumPaybox;
 
 
 //TODO : A completer
-class PayBoxReturnParams {
+interface PayBoxReturnParams {
 
     /**
      * Montant de la transaction (précisé dans PBX_TOTAL).

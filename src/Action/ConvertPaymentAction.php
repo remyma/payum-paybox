@@ -23,26 +23,24 @@ class ConvertPaymentAction extends GatewayAwareAction
         /** @var PaymentInterface $payment */
         $payment = $request->getSource();
 
-        $token = $request->getToken();
-
-        $dateTime = date("c");
-        $pbx_typeCarte = 'VISA';
-        $pbx_typePaiement = 'CARTE';
 
         $details = array();
-        $details['PBX_TYPEPAIEMENT'] = $pbx_typePaiement;
-        $details['PBX_TYPECARTE'] = $pbx_typeCarte;
-        $details['PBX_TOTAL'] = 999;
+        $details['PBX_TOTAL'] = $payment->getTotalAmount();
+        //TODO : dynamise currency code.
         $details['PBX_DEVISE'] = '978';
         $details['PBX_CMD'] = $payment->getNumber();
-        $details['PBX_PORTEUR'] = 'marem@smile.fr';
-        $details['PBX_REPONDRE_A'] = 'http://www.votre-site.extention/page-de-back-office-site';
-        $details['PBX_RETOUR'] = 'Mt:M;Ref:R;Auto:A;error_code:E';
+        $details['PBX_PORTEUR'] = $payment->getClientEmail();
+        $token = $request->getToken();
         $details['PBX_EFFECTUE'] = $token->getTargetUrl();
         $details['PBX_ANNULE'] = $token->getTargetUrl();
         $details['PBX_REFUSE'] = $token->getTargetUrl();
         $details['PBX_HASH'] = 'SHA512';
+        $dateTime = date("c");
         $details['PBX_TIME'] = $dateTime;
+
+
+        $paymentDetails = $payment->getDetails();
+        array_merge($details, $paymentDetails);
 
         $request->setResult((array) $details);
     }
