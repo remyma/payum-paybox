@@ -2,7 +2,7 @@
     "name": "marem/payum-paybox",
     "type": "project",
     "description": "Paybox extension for Payum",
-    "keyword": ["payum", "paybox", "payment"],
+    "keywords": ["payum", "paybox", "payment"],
     "homepage": "https://github.com/remyma/payum-paybox",
     "license": "MIT",
     "authors": [
@@ -26,7 +26,6 @@
             "Marem\\PayumPaybox\\": "src/"
         }
     },
-    "target-dir": "Marem/PayumPaybox",
     "extra": {
         "branch-alias": {
             "dev-master": "1.3-dev"
