@@ -24,7 +24,7 @@ class ConvertPaymentAction extends GatewayAwareAction
         $payment = $request->getSource();
 
 
-        $details = array();
+        $details = ArrayObject::ensureArrayObject($payment->getDetails());
         $details['PBX_TOTAL'] = $payment->getTotalAmount();
         //TODO : dynamise currency code.
         $details['PBX_DEVISE'] = '978';
@@ -37,10 +37,6 @@ class ConvertPaymentAction extends GatewayAwareAction
         $details['PBX_HASH'] = 'SHA512';
         $dateTime = date("c");
         $details['PBX_TIME'] = $dateTime;
-
-
-        $paymentDetails = $payment->getDetails();
-        array_merge($details, $paymentDetails);
 
         $request->setResult((array) $details);
     }

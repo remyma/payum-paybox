@@ -35,6 +35,7 @@ class PayboxGatewayFactory extends GatewayFactory
                 'rang' => '',
                 'identifiant' => '',
                 'hmac' => '',
+                'hash' => 'SHA512',
                 'sandbox' => true,
             );
             $config->defaults($config['payum.default_options']);

@@ -1,19 +1,27 @@
 <?php
 namespace Marem\PayumPaybox\Action;
 
-use Marem\PayumPaybox\Action\Api\BaseApiAwareAction;
+use Marem\PayumPaybox\Api;
+use Payum\Core\Action\GatewayAwareAction;
+use Payum\Core\ApiAwareInterface;
+use Payum\Core\ApiAwareTrait;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpPostRedirect;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
-use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetHttpRequest;
 
-class CaptureAction extends BaseApiAwareAction implements GatewayAwareInterface
+class CaptureAction extends GatewayAwareAction implements ApiAwareInterface
 {
-    use GatewayAwareTrait;
+    use ApiAwareTrait;
+
+    public function __construct()
+    {
+        $this->apiClass = Api::class;
+    }
 
     /**
      * {@inheritDoc}

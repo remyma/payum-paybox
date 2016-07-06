@@ -60,6 +60,7 @@ class Api
         $fields['PBX_SITE'] = $this->options['site'];
         $fields['PBX_RANG'] = $this->options['rang'];
         $fields['PBX_IDENTIFIANT'] = $this->options['identifiant'];
+        $fields['PBX_HASH'] = $this->options['hash'];
         $fields['PBX_HMAC'] = strtoupper($this->computeHmac($this->options['hmac'], $fields));
 
         $authorizeTokenUrl = $this->getAuthorizeTokenUrl();
@@ -135,7 +136,7 @@ class Api
         $binKey = pack("H*", $hmac);
         $msg = self::stringify($fields);
 
-        return strtoupper(hash_hmac('sha512', $msg, $binKey));
+        return strtoupper(hash_hmac($fields['PBX_HASH'], $msg, $binKey));
     }
 
     /**
