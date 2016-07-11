@@ -36,6 +36,7 @@ class PayboxGatewayFactory extends GatewayFactory
                 'identifiant' => '',
                 'hmac' => '',
                 'hash' => 'SHA512',
+                'retour' => 'Mt:M;Ref:R;Auto:A;error_code:E',
                 'sandbox' => true,
             );
             $config->defaults($config['payum.default_options']);

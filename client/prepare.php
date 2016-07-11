@@ -18,8 +18,7 @@ $payment->setClientEmail('foo@example.com');
 /* Options */
 $payment->setDetails(array(
     'PBX_TYPEPAIEMENT' => 'CARTE',
-    'PBX_TYPECARTE' => 'VISA',
-    'PBX_RETOUR' => 'Mt:M;Ref:R;Auto:A;error_code:E'
+    'PBX_TYPECARTE' => 'VISA'
 ));
 
 
