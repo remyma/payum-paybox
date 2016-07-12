@@ -2,8 +2,8 @@
 
 namespace Marem\PayumPaybox\Action;
 
-
 use Marem\PayumPaybox\Api;
+use Marem\PayumPaybox\PayBoxRequestParams;
 use Marem\PayumPaybox\Request\Api\ChoosePaymentType;
 use Payum\Core\Action\GatewayAwareAction;
 use Payum\Core\ApiAwareInterface;
@@ -43,14 +43,15 @@ class ChoosePaymentTypeAction extends GatewayAwareAction implements ApiAwareInte
 
         RequestNotSupportedException::assertSupports($this, $request);
 
-
         $details = ArrayObject::ensureArrayObject($request->getModel());
 
         $getHttpRequest = new GetHttpRequest();
         $this->gateway->execute($getHttpRequest);
+
+        /** if form has been submitted, set the payment type and card type to complete the payment details*/
         if ($getHttpRequest->method == 'POST' && isset($getHttpRequest->request['paymentType'])) {
-            $details['PBX_TYPEPAIEMENT'] = $getHttpRequest->request['paymentType'];
-            $details['PBX_TYPECARTE'] = $getHttpRequest->request['cardType'];
+            $details[PayBoxRequestParams::PBX_TYPEPAIEMENT] = $getHttpRequest->request['paymentType'];
+            $details[PayBoxRequestParams::PBX_TYPECARTE] = $getHttpRequest->request['cardType'];
             return null;
         }
 

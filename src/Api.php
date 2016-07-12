@@ -57,12 +57,12 @@ class Api
 
     public function doPayment(array $fields)
     {
-        $fields['PBX_SITE'] = $this->options['site'];
-        $fields['PBX_RANG'] = $this->options['rang'];
-        $fields['PBX_IDENTIFIANT'] = $this->options['identifiant'];
-        $fields['PBX_HASH'] = $this->options['hash'];
-        $fields['PBX_RETOUR'] = $this->options['retour'];
-        $fields['PBX_HMAC'] = strtoupper($this->computeHmac($this->options['hmac'], $fields));
+        $fields[PayBoxRequestParams::PBX_SITE] = $this->options['site'];
+        $fields[PayBoxRequestParams::PBX_RANG] = $this->options['rang'];
+        $fields[PayBoxRequestParams::PBX_IDENTIFIANT] = $this->options['identifiant'];
+        $fields[PayBoxRequestParams::PBX_HASH] = $this->options['hash'];
+        $fields[PayBoxRequestParams::PBX_RETOUR] = $this->options['retour'];
+        $fields[PayBoxRequestParams::PBX_HMAC] = strtoupper($this->computeHmac($this->options['hmac'], $fields));
 
         $authorizeTokenUrl = $this->getAuthorizeTokenUrl();
         throw new HttpPostRedirect($authorizeTokenUrl, $fields);
@@ -137,7 +137,7 @@ class Api
         $binKey = pack("H*", $hmac);
         $msg = self::stringify($fields);
 
-        return strtoupper(hash_hmac($fields['PBX_HASH'], $msg, $binKey));
+        return strtoupper(hash_hmac($fields[PayBoxRequestParams::PBX_HASH], $msg, $binKey));
     }
 
     /**

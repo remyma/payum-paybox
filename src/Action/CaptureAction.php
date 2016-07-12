@@ -2,6 +2,7 @@
 namespace Marem\PayumPaybox\Action;
 
 use Marem\PayumPaybox\Api;
+use Marem\PayumPaybox\PayBoxRequestParams;
 use Marem\PayumPaybox\Request\Api\ChoosePaymentType;
 use Payum\Core\Action\GatewayAwareAction;
 use Payum\Core\ApiAwareInterface;
@@ -36,7 +37,9 @@ class CaptureAction extends GatewayAwareAction implements ApiAwareInterface
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
 
-        if ($details['PBX_TYPEPAIEMENT'] == null) {
+        /** if no payment type provided in config, execture a choose payment type action
+         so that user can choose the payment type*/
+        if ($details[PayBoxRequestParams::PBX_TYPEPAIEMENT] == null) {
             $choosePaymentTypeRequest = new ChoosePaymentType($details);
             $this->gateway->execute($choosePaymentTypeRequest);
         }
