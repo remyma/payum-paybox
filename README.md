@@ -41,14 +41,7 @@ This scripts acts as a payment confirmation. In this sample we just print paymen
 TODO
 
 ## Documentation
-
-TODO
 * [Documentation](src/Resources/docs/index.md)
-
-### Gateway
-
-### Actions
-
 
 ## Resources
 
