@@ -5,7 +5,14 @@ The plugin has been generated thanks to the payum composer Skeleton.
 
 ## Integration
 ### Test client
-TODO
+The client directory contains sample scripts to illustrate how the plugin should work.
+Use a server to serve prepare.php and it will guide you through a sample payment.
+
+The client directory contains 4 scripts :
+* config.php
+* prepare.php
+* capture.php
+* done.php
 
 ### Integrate in your project
 TODO
