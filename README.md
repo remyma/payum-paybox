@@ -43,6 +43,8 @@ TODO
 ## Documentation
 
 TODO
+* [Documentation](src/Resources/docs/index.md)
+
 ### Gateway
 
 ### Actions
@@ -50,10 +52,8 @@ TODO
 
 ## Resources
 
-* [Documentation](https://github.com/Payum/Payum/blob/master/src/Payum/Core/Resources/docs/index.md)
-* [Questions](http://stackoverflow.com/questions/tagged/payum)
-* [Issue Tracker](https://github.com/Payum/Payum/issues)
-* [Twitter](https://twitter.com/payumphp)
+* [Payum Documentation](https://github.com/Payum/Payum/blob/master/src/Payum/Core/Resources/docs/index.md)
+* [Paybox Documentation] (http://www1.paybox.com/)
 
 ## License
 
