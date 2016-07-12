@@ -3,6 +3,8 @@
 
 use Payum\Core\Request\Capture;
 use Payum\Core\Reply\HttpRedirect;
+use Payum\Core\Reply\HttpResponse;
+use Payum\Core\Reply\ReplyInterface;
 
 include 'config.php';
 

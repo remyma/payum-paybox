@@ -16,10 +16,10 @@ $payment->setClientId('anId');
 $payment->setClientEmail('foo@example.com');
 
 /* Options */
-$payment->setDetails(array(
+/*$payment->setDetails(array(
     'PBX_TYPEPAIEMENT' => 'CARTE',
     'PBX_TYPECARTE' => 'VISA'
-));
+));*/
 
 
 $storage->update($payment);

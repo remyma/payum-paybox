@@ -3,6 +3,7 @@ namespace Marem\PayumPaybox;
 
 use Marem\PayumPaybox\Action\AuthorizeAction;
 use Marem\PayumPaybox\Action\CancelAction;
+use Marem\PayumPaybox\Action\ChoosePaymentTypeAction;
 use Marem\PayumPaybox\Action\ConvertPaymentAction;
 use Marem\PayumPaybox\Action\CaptureAction;
 use Marem\PayumPaybox\Action\NotifyAction;
@@ -27,6 +28,10 @@ class PayboxGatewayFactory extends GatewayFactory
             'payum.action.notify' => new NotifyAction(),
             'payum.action.status' => new StatusAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
+            'payum.template.chosse_card_type' => '@PayumPaybox/Action/choose_payment_type.html.twig',
+            'payum.action.choose_payment_type' => function (ArrayObject $config) {
+                return new ChoosePaymentTypeAction($config['payum.template.chosse_card_type']);
+            }
         ]);
 
         if (false == $config['payum.api']) {
@@ -48,5 +53,9 @@ class PayboxGatewayFactory extends GatewayFactory
                 return new Api((array) $config, $config['payum.http_client'], $config['httplug.message_factory']);
             };
         }
+
+        $config['payum.paths'] = array_replace([
+            'PayumPaybox' => __DIR__.'/Resources/views',
+        ], $config['payum.paths'] ?: []);
     }
 }

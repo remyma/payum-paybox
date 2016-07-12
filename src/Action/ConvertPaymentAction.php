@@ -1,6 +1,7 @@
 <?php
 namespace Marem\PayumPaybox\Action;
 
+use Marem\PayumPaybox\PayBoxRequestParams;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Action\GatewayAwareAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -24,17 +25,17 @@ class ConvertPaymentAction extends GatewayAwareAction
         $payment = $request->getSource();
 
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
-        $details['PBX_TOTAL'] = $payment->getTotalAmount();
+        $details[PayBoxRequestParams::PBX_TOTAL] = $payment->getTotalAmount();
         //TODO : dynamise currency code.
-        $details['PBX_DEVISE'] = '978';
-        $details['PBX_CMD'] = $payment->getNumber();
-        $details['PBX_PORTEUR'] = $payment->getClientEmail();
+        $details[PayBoxRequestParams::PBX_DEVISE] = '978';
+        $details[PayBoxRequestParams::PBX_CMD] = $payment->getNumber();
+        $details[PayBoxRequestParams::PBX_PORTEUR] = $payment->getClientEmail();
         $token = $request->getToken();
-        $details['PBX_EFFECTUE'] = $token->getTargetUrl();
-        $details['PBX_ANNULE'] = $token->getTargetUrl();
-        $details['PBX_REFUSE'] = $token->getTargetUrl();
+        $details[PayBoxRequestParams::PBX_EFFECTUE] = $token->getTargetUrl();
+        $details[PayBoxRequestParams::PBX_ANNULE] = $token->getTargetUrl();
+        $details[PayBoxRequestParams::PBX_REFUSE] = $token->getTargetUrl();
         $dateTime = date("c");
-        $details['PBX_TIME'] = $dateTime;
+        $details[PayBoxRequestParams::PBX_TIME] = $dateTime;
 
         $request->setResult((array) $details);
     }
