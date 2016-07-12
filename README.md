@@ -5,6 +5,8 @@ The plugin has been generated thanks to the payum composer Skeleton.
 
 For now, only Paybox system is supported. There is no gateway for paybox direct.
 
+![How paybox system works](src/Resources/docs/images/sequenceDiagram.png)
+
 ## Integration
 ### Test client
 The client directory contains sample scripts to illustrate how the plugin should work.
