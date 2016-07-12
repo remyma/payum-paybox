@@ -65,7 +65,7 @@ class Api
         $fields['PBX_HMAC'] = strtoupper($this->computeHmac($this->options['hmac'], $fields));
 
         $authorizeTokenUrl = $this->getAuthorizeTokenUrl();
-        return new HttpPostRedirect($authorizeTokenUrl, $fields);
+        throw new HttpPostRedirect($authorizeTokenUrl, $fields);
     }
 
     /**

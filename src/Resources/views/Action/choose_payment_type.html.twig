@@ -1,0 +1,26 @@
+{% extends layout ?: "@PayumCore/layout.html.twig" %}
+
+{% block payum_body %}
+    {{ parent() }}
+
+    <h2>Choose your payment type</h2>
+    <form action="{{ actionUrl|default('') }}" method="POST">
+        <div>
+            <label for="paymentType">Payment type</label>
+            <input type="radio" name="paymentType" value="CARTE">Card</input>
+            <input type="radio" name="paymentType" value="PAYPAL">Paypal</input>
+        </div>
+        <div>
+            <label>Card type</label>
+            <select name="cardType">
+                <option value="CB">CB</option>
+                <option value="PAYPAL">Paypal</option>
+            </select>
+        </div>
+        <div>
+            <input type="submit" value="Pay"/>
+        </div>
+    </form>
+{% endblock %}
+
+
