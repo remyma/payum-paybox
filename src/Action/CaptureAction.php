@@ -37,9 +37,10 @@ class CaptureAction extends GatewayAwareAction implements ApiAwareInterface
 
         $details = ArrayObject::ensureArrayObject($request->getModel());
 
-        /** if no payment type provided in config, execture a choose payment type action
+        /** if no payment type provided in config, execute a choose payment type action
          so that user can choose the payment type*/
-        if ($details[PayBoxRequestParams::PBX_TYPEPAIEMENT] == null) {
+        if ($details[PayBoxRequestParams::PBX_TYPEPAIEMENT] == null
+            && $this->api->getOptions()['type_paiement'] == null) {
             $choosePaymentTypeRequest = new ChoosePaymentType($details);
             $this->gateway->execute($choosePaymentTypeRequest);
         }

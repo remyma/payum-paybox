@@ -43,6 +43,8 @@ class PayboxGatewayFactory extends GatewayFactory
                 'hash' => 'SHA512',
                 'retour' => 'Mt:M;Ref:R;Auto:A;error_code:E',
                 'sandbox' => true,
+                'type_paiement' => '',
+                'type_carte' => ''
             );
             $config->defaults($config['payum.default_options']);
             $config['payum.required_options'] = array('site', 'rang', 'identifiant', 'hmac');
